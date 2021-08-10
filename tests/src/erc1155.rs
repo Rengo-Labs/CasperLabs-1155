@@ -184,7 +184,7 @@ impl Token {
     ) {
         self.call(
             sender,
-            "transfer_from",
+            "safe_batch_transfer_from",
             runtime_args! {
                 "owner" => owner,
                 "recipient" => recipient,
