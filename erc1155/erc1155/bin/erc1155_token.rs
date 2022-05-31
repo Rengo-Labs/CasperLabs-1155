@@ -220,7 +220,7 @@ fn call() {
             .unwrap_or_revert();
 
         // Store contract in the account's named keys.
-   
+        let contract_name: alloc::string::String = runtime::get_named_arg("contract_name");
         runtime::put_key(
             &format!("{}_package_hash", contract_name),
             package_hash.into(),

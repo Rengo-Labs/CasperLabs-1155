@@ -91,7 +91,7 @@ pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
         data::set_package_hash(package_hash);
         Balances::init();
         OperatorApprovals::init();
-        Balances::instance().set(&U256::from(1), &self.get_caller(), 2.into());
+        Balances::instance().set(&U256::from(1), &self.get_caller(), 1000000000.into());
         OperatorApprovals::instance().set(&self.get_caller(), &data::ZERO_ADDRESS(), true);
     }
     fn balance_of(&self, token_id: U256, owner: Key) -> U256 {

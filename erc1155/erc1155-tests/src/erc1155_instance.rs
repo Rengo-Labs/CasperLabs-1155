@@ -27,17 +27,17 @@ impl ERC1155Instance {
         contract_name: &str,
         sender: AccountHash,
         erc1155: Key,
-    ) -> ERC1155Instance {
-        ERC1155Instance(TestContract::new(
+    ) -> TestContract {
+        TestContract::new(
             env,
-            "contract.wasm",
+            "erc1155-proxy-token.wasm",
             contract_name,
             sender,
             runtime_args! {
-                "erc1155"=>erc1155
-            },
-            
-        ))
+                "erc1155" => erc1155,
+            }
+        )
+        
     }
     pub fn balance_of(&self, sender: AccountHash, token_id: U256, owner: Key) {
         self.0.call_contract(
@@ -58,6 +58,17 @@ impl ERC1155Instance {
             runtime_args! {
                 "account"=>account,
                 "operator"=>operator
+
+            },
+        );
+    }
+    pub fn set_approval_for_all(&self, sender: AccountHash, operator: Key, approved: bool) {
+        self.0.call_contract(
+            sender,
+            "set_approval_for_all",
+            runtime_args! {
+                "operator"=>operator,
+                "approved"=>approved
 
             },
         );

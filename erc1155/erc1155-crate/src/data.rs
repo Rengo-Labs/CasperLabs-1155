@@ -30,7 +30,6 @@ impl Balances {
         Dict::init(BALACNES)
     }
 
-    // A bit change is done in set/get by keys (Using templates)
 
     pub fn get(&self, token_id: &U256, owner: &Key) -> U256 {
         self.dict.get_by_keys((token_id, owner)).unwrap_or_default()
