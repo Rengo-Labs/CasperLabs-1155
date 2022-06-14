@@ -1,11 +1,24 @@
-[workspace]
+[package]
+authors = ["Nouman Nadeem  <nouman.nadeem.zafar@scytalelabs.com>"]
+edition = "2018"
+name = "erc1155"
+version = "0.1.0"
 
-members = [
-    "erc1155",
-    "erc1155-crate",
-    "erc1155-tests"
-]
+[dependencies]
+casper-contract = "1.4.4"
+casper-types = "1.5.0"
+contract-utils = { path = "../utils/contract-utils" }
+erc1155_crate = { path = "../erc1155-crate" }
+cryptoxide = "0.3.3"
+hex = { version = "0.4.3", default-features = false }
+renvm-sig = "0.1.1 "
 
-[profile.release]
-codegen-units = 1
-lto = true
+[[bin]]
+bench = false
+doctest = false
+name = "erc1155-token"
+path = "bin/erc1155_token.rs"
+test = false
+
+[features]
+default = ["casper-contract/std", "casper-types/std"]

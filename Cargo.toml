@@ -1,0 +1,12 @@
+[workspace]
+
+members = [
+    "erc1155",
+    "erc1155-crate",
+    "erc1155-proxy",
+    "erc1155-tests"
+]
+
+[profile.release]
+codegen-units = 1
+lto = true

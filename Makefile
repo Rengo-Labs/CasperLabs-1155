@@ -24,3 +24,7 @@ lint: clippy
 clean:
 	cargo clean
 	rm -rf erc1155-tests/wasm/*.wasm
+
+git-clean:
+	git rm -rf --cached .
+	git add .
