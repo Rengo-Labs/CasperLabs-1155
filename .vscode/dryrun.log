@@ -1,0 +1,5 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/saad/CasperLabs-ERC1155'
+rustup target add wasm32-unknown-unknown
+make: Leaving directory '/home/saad/CasperLabs-ERC1155'
+ 
