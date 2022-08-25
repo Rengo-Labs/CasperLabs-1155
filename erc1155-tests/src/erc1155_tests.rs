@@ -32,7 +32,7 @@ fn test_balance_of() {
      let proxy = ERC1155Instance::contract_instance(proxy);
     let arg_token_id: U256 = 1.into();
     let arg_owner: Key = Key::Account(owner);
-    proxy.balance_of(owner, arg_token_id, arg_owner);
+    proxy.balance_of(owner, arg_owner,arg_token_id );
     let res:U256= proxy.result();
      assert_eq!(res,1000000000.into());
 }

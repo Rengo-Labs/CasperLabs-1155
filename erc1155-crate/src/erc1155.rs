@@ -1,5 +1,4 @@
 use core::ptr::eq;
-
 use crate::data::{self, Balances, OperatorApprovals};
 use alloc::{
     collections::BTreeMap,
@@ -94,11 +93,14 @@ pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
         Balances::instance().set(&U256::from(1), &self.get_caller(), 1000000000.into());
         OperatorApprovals::instance().set(&self.get_caller(), &data::ZERO_ADDRESS(), true);
     }
-    fn balance_of(&self, token_id: U256, owner: Key) -> U256 {
-        if !(owner != data::ZERO_ADDRESS()) {
+    fn uri (&self)->String{
+        data::uri()
+    }
+    fn balance_of(&self,account:Key,id:U256) -> U256 {
+        if !(account != data::ZERO_ADDRESS()) {
             runtime::revert(ApiError::from(Error::InvalidOwner));
         }
-        Balances::instance().get(&token_id, &owner)
+        Balances::instance().get(&id, &account)
     }
     fn balance_of_batch(&self, accounts: Vec<Key>, ids: Vec<U256>) -> Vec<U256> {
         if !(accounts.len() == ids.len()) {
@@ -107,7 +109,7 @@ pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
         let mut batch_balances: Vec<U256> = Vec::new();
         let mut current_bal: U256 = U256::from(0);
         for i in 0..ids.len() {
-            current_bal = self.balance_of(ids[i], accounts[i]);
+            current_bal = self.balance_of(accounts[i],ids[i]);
             batch_balances.push(current_bal);
         }
         batch_balances

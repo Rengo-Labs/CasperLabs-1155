@@ -33,14 +33,14 @@ fn constructor() {
 fn balance_of(){
     let erc1155_address: ContractHash =
         mappings::get_key(&mappings::erc1155_key());
-        let token_id:U256 = runtime::get_named_arg("token_id");
-        let owner:Key = runtime::get_named_arg("owner");
+        let account:Key = runtime::get_named_arg("account");
+        let id:U256 = runtime::get_named_arg("id");
         let ret:U256 = runtime::call_contract(
             erc1155_address,
             "balance_of",
             runtime_args! {
-                "token_id" =>token_id,
-                "owner" => owner
+                "account"=>account,
+                "id"=>id
             },
         );
        mappings::set_key(&mappings::result_key(), ret);

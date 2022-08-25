@@ -41,13 +41,13 @@ impl ERC1155Instance {
         )
         
     }
-    pub fn balance_of(&self, sender: AccountHash, token_id: U256, owner: Key) {
+    pub fn balance_of(&self, sender: AccountHash, account: Key,id: U256) {
         self.0.call_contract(
             sender,
             "balance_of",
             runtime_args! {
-                "token_id"=>token_id,
-                "owner"=>owner
+                "account"=>account,
+                "id"=>id
 
             },
             0
