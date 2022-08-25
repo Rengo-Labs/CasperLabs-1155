@@ -14,7 +14,7 @@ use casper_types::{
     bytesrepr::{Bytes, ToBytes},
     runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256,
 };
-use contract_utils::{get_key, set_key, ContractContext, ContractStorage};
+use casperlabs_contract_utils::{ContractContext, ContractStorage, set_key};
 
 #[repr(u16)]
 pub enum Error {
@@ -86,7 +86,7 @@ impl ERC1155Event {
 }
 pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
     fn init(&self, uri: String, contract_hash: Key, package_hash: ContractPackageHash) {
-        data::set_uri(uri);
+        data::set_uri(uri); 
         data::set_hash(contract_hash);
         data::set_package_hash(package_hash);
         Balances::init();
@@ -118,7 +118,8 @@ pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
     fn is_approved_for_all(&mut self, account: Key, operator: Key) -> bool {
         OperatorApprovals::instance().get(&account, &operator)
     }
-    fn safe_transfer_from(&mut self, from: Key, to: Key, id: U256, amount: U256, _data: Bytes) {
+    fn safe_transfer_from(&mut self, from: Key, to: Key, id: U256, amount: U256, data: String) {
+        let _data: Bytes = Bytes::from(data.as_bytes());
         if !(from == self.get_caller() || self.is_approved_for_all(from, self.get_caller())) {
             runtime::revert(ApiError::from(Error::NotOwnerNotApproved));
         }
@@ -130,8 +131,9 @@ pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
         to: Key,
         ids: Vec<U256>,
         amounts: Vec<U256>,
-        _data: Bytes,
+        data: String
     ) {
+        let _data: Bytes = Bytes::from(data.as_bytes());
         if !(from == self.get_caller() || self.is_approved_for_all(from, self.get_caller())) {
             runtime::revert(ApiError::from(Error::NotOwnerNotApproved));
         }

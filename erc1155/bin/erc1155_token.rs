@@ -12,7 +12,7 @@ use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
-use contract_utils::{ContractContext, OnChainContractStorage};
+use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
 use erc1155_crate::ERC1155;
 
 #[derive(Default)]
@@ -87,8 +87,8 @@ fn safe_transfer_from() {
     let to: Key = runtime::get_named_arg("to");
     let id: U256 = runtime::get_named_arg("id");
     let amount: U256 = runtime::get_named_arg("amount");
-    let _data: Bytes = runtime::get_named_arg("_data");
-    Token::default().safe_transfer_from(from, to, id, amount, _data);
+    let data: String = runtime::get_named_arg("data");
+    Token::default().safe_transfer_from(from, to, id, amount, data);
 }
 #[no_mangle]
 fn safe_batch_transfer_from() {
@@ -96,8 +96,8 @@ fn safe_batch_transfer_from() {
     let to: Key = runtime::get_named_arg("to");
     let ids: Vec<U256> = runtime::get_named_arg("ids");
     let amounts: Vec<U256> = runtime::get_named_arg("amounts");
-    let _data: Bytes = runtime::get_named_arg("_data");
-    Token::default().safe_batch_transfer_from(from, to, ids, amounts, _data);
+    let data: String = runtime::get_named_arg("data");
+    Token::default().safe_batch_transfer_from(from, to, ids, amounts, data);
 }
 fn get_entry_points() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
@@ -119,7 +119,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("token_id", U256::cl_type()),
             Parameter::new("owner", Key::cl_type()),
         ],
-        // <()>::cl_type(),
+      
         bool::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -161,7 +161,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("to", Key::cl_type()),
             Parameter::new("id", U256::cl_type()),
             Parameter::new("amount", U256::cl_type()),
-            Parameter::new("_data", Bytes::cl_type()),
+            Parameter::new("data", String::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Public,
@@ -174,7 +174,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("to", Key::cl_type()),
             Parameter::new("ids", CLType::List(Box::new(CLType::U256))),
             Parameter::new("amounts", CLType::List(Box::new(CLType::U256))),
-            Parameter::new("_data", Bytes::cl_type()),
+            Parameter::new("data", String::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Public,

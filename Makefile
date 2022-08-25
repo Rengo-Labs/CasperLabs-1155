@@ -8,7 +8,7 @@ test-only:
 	cargo test -p erc1155-tests
 
 copy-wasm-file-to-test:
-	cp target/wasm32-unknown-unknown/release/*.wasm erc1155-tests/wasm
+	cp target/wasm32-unknown-unknown/release/*.wasm ./erc1155-tests/wasm
 
 test: build-contract copy-wasm-file-to-test test-only
 

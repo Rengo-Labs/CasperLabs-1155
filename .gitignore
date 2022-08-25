@@ -1,2 +1,4 @@
 target
+Cargo.lock
+.vscode
 erc1155-tests/wasm/*.wasm

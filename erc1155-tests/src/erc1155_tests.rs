@@ -2,7 +2,7 @@ use blake2::digest::consts::U2;
 use casper_types::{
     account::AccountHash, runtime_args, ContractPackageHash, Key, RuntimeArgs, URef, U256, U512,
 };
-use test_env::{TestContract, TestEnv};
+use casperlabs_test_env::{TestContract, TestEnv};
 
 use crate::erc1155_instance::ERC1155Instance;
 
