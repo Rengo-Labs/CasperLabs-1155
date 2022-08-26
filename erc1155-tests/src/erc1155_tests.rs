@@ -2,7 +2,7 @@ use blake2::digest::consts::U2;
 use casper_types::{
     account::AccountHash, runtime_args, ContractPackageHash, Key, RuntimeArgs, URef, U256, U512,
 };
-use test_env::{TestContract, TestEnv};
+use casperlabs_test_env::{TestContract, TestEnv};
 
 use crate::erc1155_instance::ERC1155Instance;
 
@@ -32,7 +32,7 @@ fn test_balance_of() {
      let proxy = ERC1155Instance::contract_instance(proxy);
     let arg_token_id: U256 = 1.into();
     let arg_owner: Key = Key::Account(owner);
-    proxy.balance_of(owner, arg_token_id, arg_owner);
+    proxy.balance_of(owner, arg_owner,arg_token_id );
     let res:U256= proxy.result();
      assert_eq!(res,1000000000.into());
 }

@@ -2,7 +2,7 @@ use casper_types::{
     account::AccountHash, bytesrepr::{FromBytes, Bytes}, runtime_args, CLTyped, ContractPackageHash, Key,
     RuntimeArgs, URef, U256,
 };
-use test_env::{TestContract, TestEnv};
+use casperlabs_test_env::{TestContract, TestEnv};
 
 pub struct ERC1155Instance(TestContract);
 
@@ -19,6 +19,7 @@ impl ERC1155Instance {
             runtime_args! {
                 "uri" => uri
             },
+            0
             
         )
     }
@@ -35,19 +36,21 @@ impl ERC1155Instance {
             sender,
             runtime_args! {
                 "erc1155" => erc1155,
-            }
+            },
+            0
         )
         
     }
-    pub fn balance_of(&self, sender: AccountHash, token_id: U256, owner: Key) {
+    pub fn balance_of(&self, sender: AccountHash, account: Key,id: U256) {
         self.0.call_contract(
             sender,
             "balance_of",
             runtime_args! {
-                "token_id"=>token_id,
-                "owner"=>owner
+                "account"=>account,
+                "id"=>id
 
             },
+            0
         );
     }
    
@@ -60,6 +63,7 @@ impl ERC1155Instance {
                 "operator"=>operator
 
             },
+            0
         );
     }
     pub fn set_approval_for_all(&self, sender: AccountHash, operator: Key, approved: bool) {
@@ -71,6 +75,7 @@ impl ERC1155Instance {
                 "approved"=>approved
 
             },
+            0
         );
     }
 
@@ -94,6 +99,7 @@ impl ERC1155Instance {
                "amount"=>amount,
                "_data"=>_data
             },
+            0
         );
     }
     pub fn safe_batch_transfer_from(
@@ -116,6 +122,7 @@ impl ERC1155Instance {
                "amounts"=>amounts,
                "_data"=>_data
             },
+            0
 
         );
     }

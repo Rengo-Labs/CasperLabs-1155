@@ -12,7 +12,7 @@ use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
-use contract_utils::{ContractContext, OnChainContractStorage};
+use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
 use erc1155_crate::ERC1155;
 
 #[derive(Default)]
@@ -44,27 +44,26 @@ fn constructor() {
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
     Token::default().constructor(uri, contract_hash, package_hash);
 }
-
-/// This function is to transfer tokens against the address that user provided
-///
-/// # Parameters
-///
-/// * `recipient` - A Key that holds the account address of the user
-///
-/// * `amount` - A U256 that holds the amount for transfer
-///  
-
+#[no_mangle]
+fn uri() {
+    let ret: String = Token::default().uri();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
 #[no_mangle]
 fn balance_of() {
-    let token_id: U256 = runtime::get_named_arg("token_id");
-    let owner: Key = runtime::get_named_arg("owner");
-    let ret: U256 = Token::default().balance_of(token_id, owner);
+    let account: Key = runtime::get_named_arg("account");
+    let id: U256 = runtime::get_named_arg("id");
+    let ret: U256 = Token::default().balance_of(account, id);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn balance_of_batch() {
-    let accounts: Vec<Key> = runtime::get_named_arg("accounts");
+    let _accounts: Vec<String> = runtime::get_named_arg("accounts");
     let ids: Vec<U256> = runtime::get_named_arg("ids");
+    let mut accounts: Vec<Key> = Vec::new();
+    for _accounts in & _accounts {
+        accounts.push(Key::from_formatted_str(_accounts).unwrap());
+    }
     let ret: Vec<U256> = Token::default().balance_of_batch(accounts, ids);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
@@ -87,8 +86,8 @@ fn safe_transfer_from() {
     let to: Key = runtime::get_named_arg("to");
     let id: U256 = runtime::get_named_arg("id");
     let amount: U256 = runtime::get_named_arg("amount");
-    let _data: Bytes = runtime::get_named_arg("_data");
-    Token::default().safe_transfer_from(from, to, id, amount, _data);
+    let data: String = runtime::get_named_arg("data");
+    Token::default().safe_transfer_from(from, to, id, amount, data);
 }
 #[no_mangle]
 fn safe_batch_transfer_from() {
@@ -96,8 +95,8 @@ fn safe_batch_transfer_from() {
     let to: Key = runtime::get_named_arg("to");
     let ids: Vec<U256> = runtime::get_named_arg("ids");
     let amounts: Vec<U256> = runtime::get_named_arg("amounts");
-    let _data: Bytes = runtime::get_named_arg("_data");
-    Token::default().safe_batch_transfer_from(from, to, ids, amounts, _data);
+    let data: String = runtime::get_named_arg("data");
+    Token::default().safe_batch_transfer_from(from, to, ids, amounts, data);
 }
 fn get_entry_points() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
@@ -112,14 +111,24 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Groups(vec![Group::new("constructor")]),
         EntryPointType::Contract,
     ));
-
+    entry_points.add_entry_point(EntryPoint::new(
+        "uri",
+        vec![
+        ],
+      
+        String::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    
     entry_points.add_entry_point(EntryPoint::new(
         "balance_of",
         vec![
-            Parameter::new("token_id", U256::cl_type()),
-            Parameter::new("owner", Key::cl_type()),
+            Parameter::new("account", Key::cl_type()),
+            Parameter::new("id", U256::cl_type()),
+            
         ],
-        // <()>::cl_type(),
+      
         bool::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -127,7 +136,7 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "balance_of_batch",
         vec![
-            Parameter::new("accounts", CLType::List(Box::new(CLType::Key))),
+            Parameter::new("accounts", CLType::List(Box::new(String::cl_type()))),
             Parameter::new("ids", CLType::List(Box::new(CLType::U256))),
         ],
         CLType::List(Box::new(CLType::U256)),
@@ -161,7 +170,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("to", Key::cl_type()),
             Parameter::new("id", U256::cl_type()),
             Parameter::new("amount", U256::cl_type()),
-            Parameter::new("_data", Bytes::cl_type()),
+            Parameter::new("data", String::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Public,
@@ -174,7 +183,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("to", Key::cl_type()),
             Parameter::new("ids", CLType::List(Box::new(CLType::U256))),
             Parameter::new("amounts", CLType::List(Box::new(CLType::U256))),
-            Parameter::new("_data", Bytes::cl_type()),
+            Parameter::new("data", String::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Public,

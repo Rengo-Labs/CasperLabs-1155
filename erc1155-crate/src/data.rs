@@ -4,8 +4,8 @@ use casper_types::{
     bytesrepr::{FromBytes, ToBytes},
     ContractPackageHash, Key, U256,
 };
-use contract_utils::Dict;
-use contract_utils::{get_key, set_key};
+
+use casperlabs_contract_utils::{get_key, set_key,Dict};
 
 pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";
 pub const SELF_PACKAGE_HASH: &str = "self_package_hash";

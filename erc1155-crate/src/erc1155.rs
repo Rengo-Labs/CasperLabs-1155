@@ -1,5 +1,4 @@
 use core::ptr::eq;
-
 use crate::data::{self, Balances, OperatorApprovals};
 use alloc::{
     collections::BTreeMap,
@@ -14,7 +13,7 @@ use casper_types::{
     bytesrepr::{Bytes, ToBytes},
     runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256,
 };
-use contract_utils::{get_key, set_key, ContractContext, ContractStorage};
+use casperlabs_contract_utils::{ContractContext, ContractStorage, set_key};
 
 #[repr(u16)]
 pub enum Error {
@@ -86,7 +85,7 @@ impl ERC1155Event {
 }
 pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
     fn init(&self, uri: String, contract_hash: Key, package_hash: ContractPackageHash) {
-        data::set_uri(uri);
+        data::set_uri(uri); 
         data::set_hash(contract_hash);
         data::set_package_hash(package_hash);
         Balances::init();
@@ -94,11 +93,14 @@ pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
         Balances::instance().set(&U256::from(1), &self.get_caller(), 1000000000.into());
         OperatorApprovals::instance().set(&self.get_caller(), &data::ZERO_ADDRESS(), true);
     }
-    fn balance_of(&self, token_id: U256, owner: Key) -> U256 {
-        if !(owner != data::ZERO_ADDRESS()) {
+    fn uri (&self)->String{
+        data::uri()
+    }
+    fn balance_of(&self,account:Key,id:U256) -> U256 {
+        if !(account != data::ZERO_ADDRESS()) {
             runtime::revert(ApiError::from(Error::InvalidOwner));
         }
-        Balances::instance().get(&token_id, &owner)
+        Balances::instance().get(&id, &account)
     }
     fn balance_of_batch(&self, accounts: Vec<Key>, ids: Vec<U256>) -> Vec<U256> {
         if !(accounts.len() == ids.len()) {
@@ -107,7 +109,7 @@ pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
         let mut batch_balances: Vec<U256> = Vec::new();
         let mut current_bal: U256 = U256::from(0);
         for i in 0..ids.len() {
-            current_bal = self.balance_of(ids[i], accounts[i]);
+            current_bal = self.balance_of(accounts[i],ids[i]);
             batch_balances.push(current_bal);
         }
         batch_balances
@@ -118,7 +120,8 @@ pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
     fn is_approved_for_all(&mut self, account: Key, operator: Key) -> bool {
         OperatorApprovals::instance().get(&account, &operator)
     }
-    fn safe_transfer_from(&mut self, from: Key, to: Key, id: U256, amount: U256, _data: Bytes) {
+    fn safe_transfer_from(&mut self, from: Key, to: Key, id: U256, amount: U256, data: String) {
+        let _data: Bytes = Bytes::from(data.as_bytes());
         if !(from == self.get_caller() || self.is_approved_for_all(from, self.get_caller())) {
             runtime::revert(ApiError::from(Error::NotOwnerNotApproved));
         }
@@ -130,8 +133,9 @@ pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
         to: Key,
         ids: Vec<U256>,
         amounts: Vec<U256>,
-        _data: Bytes,
+        data: String
     ) {
+        let _data: Bytes = Bytes::from(data.as_bytes());
         if !(from == self.get_caller() || self.is_approved_for_all(from, self.get_caller())) {
             runtime::revert(ApiError::from(Error::NotOwnerNotApproved));
         }
