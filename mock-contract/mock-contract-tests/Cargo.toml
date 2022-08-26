@@ -1,0 +1,20 @@
+[package]
+authors = ["Nouman Nadeem <nouman.nadeem.zafar@scytalelabs.com>"]
+edition = "2018"
+name = "mock-contract-tests"
+version = "0.2.1"
+
+[dependencies]
+blake2 = "0.9.1"
+casper-contract = "1.4.4"
+casper-engine-test-support = "2.1.0"
+casper-types = "1.5.0"
+casperlabs-contract-utils = "0.1.0"
+hex = "0.4.3"
+renvm-sig = "0.1.1"
+casperlabs-test-env = "0.1.0"
+common = {path = "../../common"}
+
+
+[features]
+default = ["casper-contract/std", "casper-types/std", "casper-contract/test-support"]

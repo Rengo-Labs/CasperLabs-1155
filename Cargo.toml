@@ -3,8 +3,13 @@
 members = [
     "erc1155",
     "erc1155-crate",
-    "erc1155-proxy",
-    "erc1155-tests"
+    "erc1155-session-code",
+    "erc1155-tests",
+    "common",
+    #Mock Contract
+    "mock-contract/mock-contract",
+    "mock-contract/mock-contract-crate",
+    "mock-contract/mock-contract-tests",
 ]
 
 [profile.release]

@@ -1,11 +1,8 @@
 use alloc::string::String;
 use casper_contract::unwrap_or_revert::UnwrapOrRevert;
-use casper_types::{
-    bytesrepr::{FromBytes, ToBytes},
-    ContractPackageHash, Key, U256,
-};
+use casper_types::{ContractPackageHash, Key, U256};
 
-use casperlabs_contract_utils::{get_key, set_key,Dict};
+use casperlabs_contract_utils::{get_key, set_key, Dict};
 
 pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";
 pub const SELF_PACKAGE_HASH: &str = "self_package_hash";
@@ -13,7 +10,6 @@ pub const RESULT: &str = "result";
 pub const OWNERS: &str = "owners";
 pub const NAME: &str = "name";
 pub const SYMBOL: &str = "symbol";
-
 pub const BALACNES: &str = "balances";
 pub struct Balances {
     dict: Dict,
@@ -29,7 +25,6 @@ impl Balances {
     pub fn init() {
         Dict::init(BALACNES)
     }
-
 
     pub fn get(&self, token_id: &U256, owner: &Key) -> U256 {
         self.dict.get_by_keys((token_id, owner)).unwrap_or_default()
@@ -66,7 +61,7 @@ impl OperatorApprovals {
         self.dict.set_by_keys((account, operator), value);
     }
 }
-
+#[warn(non_snake_case)]
 pub fn ZERO_ADDRESS() -> Key {
     Key::from_formatted_str(
         "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),

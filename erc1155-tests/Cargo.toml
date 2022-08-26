@@ -10,7 +10,7 @@ casper-engine-test-support = { version = "2.1.0", features = ["test-support"] }
 casper-execution-engine = "1.5.0"
 casper-types = "1.5.0"
 casper-hashing = "1.4.3"
-
+common = {path = "../common"}
 casperlabs-contract-utils = "0.1.2"
 casperlabs-test-env = "0.2.0"
 hex = "0.4.3"
