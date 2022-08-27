@@ -1,6 +1,7 @@
 use casper_types::{
-    account::AccountHash, bytesrepr::{FromBytes, Bytes}, runtime_args, CLTyped, ContractPackageHash, Key,
-    RuntimeArgs, URef, U256,
+    account::AccountHash,
+    bytesrepr::{Bytes, FromBytes},
+    runtime_args, CLTyped, Key, RuntimeArgs, U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
 
@@ -10,7 +11,12 @@ impl ERC1155Instance {
     pub fn contract_instance(contract: TestContract) -> ERC1155Instance {
         ERC1155Instance(contract)
     }
-    pub fn new(env: &TestEnv, contract_name: &str, sender: AccountHash, uri: String) -> TestContract {
+    pub fn new(
+        env: &TestEnv,
+        contract_name: &str,
+        sender: AccountHash,
+        uri: String,
+    ) -> TestContract {
         TestContract::new(
             env,
             "erc1155-token.wasm",
@@ -19,29 +25,10 @@ impl ERC1155Instance {
             runtime_args! {
                 "uri" => uri
             },
-            0
-            
+            0,
         )
     }
-    pub fn proxy(
-        env: &TestEnv,
-        contract_name: &str,
-        sender: AccountHash,
-        erc1155: Key,
-    ) -> TestContract {
-        TestContract::new(
-            env,
-            "erc1155-proxy-token.wasm",
-            contract_name,
-            sender,
-            runtime_args! {
-                "erc1155" => erc1155,
-            },
-            0
-        )
-        
-    }
-    pub fn balance_of(&self, sender: AccountHash, account: Key,id: U256) {
+    pub fn balance_of(&self, sender: AccountHash, account: Key, id: U256) {
         self.0.call_contract(
             sender,
             "balance_of",
@@ -50,10 +37,13 @@ impl ERC1155Instance {
                 "id"=>id
 
             },
-            0
+            0,
         );
     }
-   
+    pub fn uri(&self, sender: AccountHash, account: Key) {
+        self.0.call_contract(sender, "uri", runtime_args! {}, 0);
+    }
+
     pub fn is_approved_for_all(&self, sender: AccountHash, account: Key, operator: Key) {
         self.0.call_contract(
             sender,
@@ -63,7 +53,7 @@ impl ERC1155Instance {
                 "operator"=>operator
 
             },
-            0
+            0,
         );
     }
     pub fn set_approval_for_all(&self, sender: AccountHash, operator: Key, approved: bool) {
@@ -75,7 +65,7 @@ impl ERC1155Instance {
                 "approved"=>approved
 
             },
-            0
+            0,
         );
     }
 
@@ -99,7 +89,7 @@ impl ERC1155Instance {
                "amount"=>amount,
                "_data"=>_data
             },
-            0
+            0,
         );
     }
     pub fn safe_batch_transfer_from(
@@ -122,19 +112,16 @@ impl ERC1155Instance {
                "amounts"=>amounts,
                "_data"=>_data
             },
-            0
-
+            0,
         );
     }
-
-    
 
     // Result methods
     pub fn result<T: CLTyped + FromBytes>(&self) -> T {
         self.0.query_named_key("result".to_string())
     }
 
-    pub fn package_hash(&self) -> ContractPackageHash {
-        self.0.query_named_key("self_package_hash".to_string())
+    pub fn package_hash(&self) -> [u8; 32] {
+        self.0.package_hash()
     }
 }

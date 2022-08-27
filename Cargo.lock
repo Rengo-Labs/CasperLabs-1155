@@ -387,6 +387,19 @@ dependencies = [
 
 [[package]]
 name = "casperlabs-test-env"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9534bdbb2d46b60f8c7ef4420c3a205f2526c27e0c2a6b882e3c23afc38e8522"
+dependencies = [
+ "casper-contract",
+ "casper-engine-test-support",
+ "casper-execution-engine 2.0.0",
+ "casper-types",
+ "rand 0.8.5",
+]
+
+[[package]]
+name = "casperlabs-test-env"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e00fd76276d7d48fafe5a6f05260d6be1159f36475fc2d913aa2b03c174dd23f"
@@ -429,6 +442,14 @@ dependencies = [
  "time",
  "wasm-bindgen",
  "winapi",
+]
+
+[[package]]
+name = "common"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
 ]
 
 [[package]]
@@ -685,21 +706,31 @@ dependencies = [
  "casper-types",
  "casperlabs-contract-utils",
  "cryptoxide",
- "erc1155_crate",
+ "erc1155-crate",
  "hex",
  "renvm-sig",
 ]
 
 [[package]]
-name = "erc1155-proxy"
-version = "0.2.0"
+name = "erc1155-crate"
+version = "0.1.0"
 dependencies = [
  "casper-contract",
  "casper-types",
+ "casper_types_derive",
  "casperlabs-contract-utils",
  "cryptoxide",
  "hex",
  "renvm-sig",
+]
+
+[[package]]
+name = "erc1155-session-code"
+version = "0.1.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "common",
 ]
 
 [[package]]
@@ -713,21 +744,9 @@ dependencies = [
  "casper-hashing",
  "casper-types",
  "casperlabs-contract-utils",
- "casperlabs-test-env",
+ "casperlabs-test-env 0.2.0",
+ "common",
  "hex",
-]
-
-[[package]]
-name = "erc1155_crate"
-version = "0.1.0"
-dependencies = [
- "casper-contract",
- "casper-types",
- "casper_types_derive",
- "casperlabs-contract-utils",
- "cryptoxide",
- "hex",
- "renvm-sig",
 ]
 
 [[package]]
@@ -1094,6 +1113,49 @@ name = "memory_units"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8452105ba047068f40ff7093dd1d9da90898e63dd61736462e9cdda6a90ad3c3"
+
+[[package]]
+name = "mock-contract"
+version = "0.1.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "casperlabs-contract-utils",
+ "cryptoxide",
+ "erc1155-crate",
+ "hex",
+ "mock-contract-crate",
+ "renvm-sig",
+]
+
+[[package]]
+name = "mock-contract-crate"
+version = "0.1.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "casper_types_derive",
+ "casperlabs-contract-utils",
+ "cryptoxide",
+ "erc1155-crate",
+ "hex",
+ "renvm-sig",
+]
+
+[[package]]
+name = "mock-contract-tests"
+version = "0.2.1"
+dependencies = [
+ "blake2",
+ "casper-contract",
+ "casper-engine-test-support",
+ "casper-types",
+ "casperlabs-contract-utils",
+ "casperlabs-test-env 0.1.2",
+ "common",
+ "hex",
+ "renvm-sig",
+]
 
 [[package]]
 name = "num"

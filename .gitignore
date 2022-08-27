@@ -2,3 +2,4 @@ target
 Cargo.lock
 .vscode
 erc1155-tests/wasm/*.wasm
+mock-contract/mock-contract-tests/wasm/*.wasm
