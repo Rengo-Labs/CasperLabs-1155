@@ -40,7 +40,7 @@ impl ERC1155Instance {
             0,
         );
     }
-    pub fn uri(&self, sender: AccountHash, account: Key) {
+    pub fn uri(&self, sender: AccountHash) {
         self.0.call_contract(sender, "uri", runtime_args! {}, 0);
     }
 

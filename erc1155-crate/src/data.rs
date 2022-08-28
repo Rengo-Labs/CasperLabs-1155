@@ -61,12 +61,10 @@ impl OperatorApprovals {
         self.dict.set_by_keys((account, operator), value);
     }
 }
-#[warn(non_snake_case)]
+#[allow(non_snake_case)]
 pub fn ZERO_ADDRESS() -> Key {
-    Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-    )
-    .unwrap()
+    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
+        .unwrap()
 }
 pub fn uri() -> String {
     get_key("URI").unwrap_or_revert()

@@ -38,7 +38,7 @@ fn test_is_approved_for_all() {
     let contract = ERC1155Instance::contract_instance(contract);
     let arg_account: Key = Key::Account(owner);
     let arg_operator: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+        "hash-0000000000000000000000000000000000000000000000000000000000000000",
     )
     .unwrap();
     contract.is_approved_for_all(owner, arg_account, arg_operator);
@@ -48,7 +48,7 @@ fn test_set_approval_for_all() {
     let (_, owner, contract) = deploy();
     let contract = ERC1155Instance::contract_instance(contract);
     let operator: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+        "hash-0000000000000000000000000000000000000000000000000000000000000000",
     )
     .unwrap();
     contract.set_approval_for_all(owner, operator, true);

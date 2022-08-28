@@ -145,8 +145,8 @@ pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
         }
         let operator: Key = self.get_caller();
 
-        let ids: Vec<U256> = self._asSingletonArray(id);
-        let amounts: Vec<U256> = self._asSingletonArray(amount);
+        let ids: Vec<U256> = self._as_singleton_array(id);
+        let amounts: Vec<U256> = self._as_singleton_array(amount);
 
         self._before_token_transfer(
             operator,
@@ -167,11 +167,11 @@ pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
             prev_amount_reciever.checked_add(amount).unwrap_or_revert();
         Balances::instance().set(&id, &to, updated_amount_reciever);
         self.erc1155_emit(&ERC1155Event::TransferSingle {
-            operator: operator,
-            from: from,
-            to: to,
-            id: id,
-            amount: amount,
+            operator,
+            from,
+            to,
+            id,
+            amount,
         });
         self._after_token_transfer(operator, from, to, ids, amounts, _data.clone());
         self._do_safe_transfer_acceptance_check(operator, from, to, id, amount, _data);
@@ -201,7 +201,7 @@ pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
             _data.clone(),
         );
 
-        for i in 0..ids.len().clone() {
+        for i in 0..ids.len() {
             let id: U256 = ids[i].clone();
             let amount: U256 = amounts[i].clone();
             let from_balance: U256 = Balances::instance().get(&id, &from);
@@ -217,9 +217,9 @@ pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
         }
 
         self.erc1155_emit(&ERC1155Event::TransferBatch {
-            operator: operator,
-            from: from,
-            to: to,
+            operator,
+            from,
+            to,
             ids: ids.clone(),
             amounts: amounts.clone(),
         });
@@ -239,8 +239,8 @@ pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
             runtime::revert(ApiError::from(Error::MintToZeroAddress));
         }
         let operator: Key = self.get_caller();
-        let ids: Vec<U256> = self._asSingletonArray(id);
-        let amounts: Vec<U256> = self._asSingletonArray(amount);
+        let ids: Vec<U256> = self._as_singleton_array(id);
+        let amounts: Vec<U256> = self._as_singleton_array(amount);
         self._before_token_transfer(
             operator,
             ZERO_ADDRESS(),
@@ -254,11 +254,11 @@ pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
         Balances::instance().set(&id, &to, updated_amount);
 
         self.erc1155_emit(&ERC1155Event::TransferSingle {
-            operator: operator,
+            operator,
             from: data::ZERO_ADDRESS(),
-            to: to,
-            id: id,
-            amount: amount,
+            to,
+            id,
+            amount,
         });
         self._after_token_transfer(
             operator,
@@ -299,9 +299,9 @@ pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
             Balances::instance().set(&ids[i], &to, updated_amount);
         }
         self.erc1155_emit(&ERC1155Event::TransferBatch {
-            operator: operator,
+            operator,
             from: data::ZERO_ADDRESS(),
-            to: to,
+            to,
             ids: ids.clone(),
             amounts: amounts.clone(),
         });
@@ -327,8 +327,8 @@ pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
             runtime::revert(ApiError::from(Error::BurnFromZeroAddress));
         }
         let operator: Key = self.get_caller();
-        let ids: Vec<U256> = self._asSingletonArray(id);
-        let amounts: Vec<U256> = self._asSingletonArray(amount);
+        let ids: Vec<U256> = self._as_singleton_array(id);
+        let amounts: Vec<U256> = self._as_singleton_array(amount);
         self._before_token_transfer(
             operator,
             from,
@@ -344,11 +344,11 @@ pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
         let updated_amount_from: U256 = from_balance.checked_sub(amount).unwrap_or_revert();
         Balances::instance().set(&id, &from, updated_amount_from);
         self.erc1155_emit(&ERC1155Event::TransferSingle {
-            operator: operator,
-            from: from,
+            operator,
+            from,
             to: data::ZERO_ADDRESS(),
-            id: id,
-            amount: amount,
+            id,
+            amount,
         });
 
         self._after_token_transfer(
@@ -389,8 +389,8 @@ pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
         }
 
         self.erc1155_emit(&ERC1155Event::TransferBatch {
-            operator: operator,
-            from: from,
+            operator,
+            from,
             to: data::ZERO_ADDRESS(),
             ids: ids.clone(),
             amounts: amounts.clone(),
@@ -411,46 +411,47 @@ pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
         }
         OperatorApprovals::instance().set(&owner, &operator, approved);
         self.erc1155_emit(&ERC1155Event::ApprovalForAll {
-            owner: owner,
-            operator: operator,
-            approved: approved,
+            owner,
+            operator,
+            approved,
         });
     }
+
     fn _before_token_transfer(
         &mut self,
-        operator: Key,
-        from: Key,
-        to: Key,
-        ids: Vec<U256>,
-        amounts: Vec<U256>,
+        _operator: Key,
+        _from: Key,
+        _to: Key,
+        _ids: Vec<U256>,
+        _amounts: Vec<U256>,
         _data: Bytes,
     ) {
     }
     fn _after_token_transfer(
         &mut self,
-        operator: Key,
-        from: Key,
-        to: Key,
-        ids: Vec<U256>,
-        amounts: Vec<U256>,
+        _operator: Key,
+        _from: Key,
+        _to: Key,
+        _ids: Vec<U256>,
+        _amounts: Vec<U256>,
         _data: Bytes,
     ) {
     }
     fn _do_safe_transfer_acceptance_check(
         &mut self,
-        operator: Key,
-        from: Key,
-        to: Key,
-        id: U256,
-        amount: U256,
+        _operator: Key,
+        _from: Key,
+        _to: Key,
+        _id: U256,
+        _amount: U256,
         _data: Bytes,
     ) {
-        let v = to.to_formatted_string();
+        let v = _to.to_formatted_string();
         let ch = v.chars().next().unwrap();
         set_key("ch", ch.to_string());
         if eq(&ch, &'H') {
-            let ret: Vec<u8> = runtime::call_contract(
-                to.into_hash().unwrap_or_revert().into(),
+            let _ret: Vec<u8> = runtime::call_contract(
+                _to.into_hash().unwrap_or_revert().into(),
                 "on_erc1155_received",
                 runtime_args! {},
             );
@@ -459,26 +460,26 @@ pub trait ERC1155<Storage: ContractStorage>: ContractContext<Storage> {
     }
     fn _do_safe_batch_transfer_acceptance_check(
         &mut self,
-        operator: Key,
-        from: Key,
-        to: Key,
-        ids: Vec<U256>,
-        amounts: Vec<U256>,
+        _operator: Key,
+        _from: Key,
+        _to: Key,
+        _ids: Vec<U256>,
+        _amounts: Vec<U256>,
         _data: Bytes,
     ) {
-        let v = to.to_formatted_string();
+        let v = _to.to_formatted_string();
         let ch = v.chars().next().unwrap();
         set_key("ch", ch.to_string());
         if eq(&ch, &'H') {
-            let ret: Vec<u8> = runtime::call_contract(
-                to.into_hash().unwrap_or_revert().into(),
+            let _ret: Vec<u8> = runtime::call_contract(
+                _to.into_hash().unwrap_or_revert().into(),
                 "on_erc1155_received",
                 runtime_args! {},
             );
             runtime::revert(ApiError::from(Error::Erc115RejectedToken2));
         }
     }
-    fn _asSingletonArray(&self, element: U256) -> Vec<U256> {
+    fn _as_singleton_array(&self, element: U256) -> Vec<U256> {
         let mut vec = Vec::new();
         vec.push(element);
         vec
