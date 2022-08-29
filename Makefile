@@ -4,7 +4,7 @@ prepare:
 build-contract:
 	cargo build --release -p erc1155 -p erc1155-session-code --target wasm32-unknown-unknown
 build-contract-mock-contract:
-	cargo build --release -p mock-contract --target wasm32-unknown-unknown
+	cargo build --release -p mock-contract -p erc1155-session-code --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/mock-contract.wasm 2>/dev/null | true
 test-only:
 	cargo test -p erc1155-tests

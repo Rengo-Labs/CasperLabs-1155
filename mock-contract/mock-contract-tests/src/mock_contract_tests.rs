@@ -108,8 +108,22 @@ fn test_is_approved_for_all() {
     let (env, owner, instance) = deploy();
     let account: Key = Key::Account(owner);
     let operator: Key = Key::Account(env.next_user());
-    let instance = MOCKCONTRACTInstance::contract_instance(instance);
-    instance.is_approved_for_all(owner, account, operator);
+    TestContract::new(
+        &env,
+        "erc1155-session-code.wasm",
+        "SessionCode",
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(IS_APPROVED_FOR_ALL),
+            "package_hash" => Key::Hash(instance.package_hash()),
+            "owner"=>Key::from(owner),
+            "account"=>account,
+            "operator"=>operator
+        },
+        0,
+    );
+    let ret: bool = env.query_account_named_key(owner, &[IS_APPROVED_FOR_ALL.into()]);
+    assert_eq!(ret,false);
 }
 #[test]
 fn test_set_approval_for_all() {
@@ -118,6 +132,23 @@ fn test_set_approval_for_all() {
     let operator: Key = Key::Account(env.next_user());
     let approved: bool = true;
     instance.set_approval_for_all(owner, operator, approved);
+    let account: Key = Key::Account(owner);
+    TestContract::new(
+        &env,
+        "erc1155-session-code.wasm",
+        "SessionCode",
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(IS_APPROVED_FOR_ALL),
+            "package_hash" => Key::Hash(instance.package_hash()),
+            "owner"=>Key::from(owner),
+            "account"=>account,
+            "operator"=>operator
+        },
+        0,
+    );
+    let ret: bool = env.query_account_named_key(owner, &[IS_APPROVED_FOR_ALL.into()]);
+    assert_eq!(ret,true);
 }
 #[test]
 fn test_safe_transfer_from() {
