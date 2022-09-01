@@ -16,6 +16,8 @@ const {
   ERC1155_INSTALL_PAYMENT_AMOUNT,
   ERC1155_CONTRACT_NAME,
   URI,
+  ERC1155_PACKAGE_HASH,
+  ERC1155_PROXY_WASM_PATH,
 } = process.env;
 
 const KEYS = Keys.Ed25519.parseKeyFiles(
@@ -64,4 +66,34 @@ const test = async () => {
   console.log(`... Package Hash: ${packageHash}`);
 };
 
-test();
+//test();
+
+
+const testSessionCode = async () => {
+  const erc1155 = new ERC1155Client(
+    NODE_ADDRESS!,
+    CHAIN_NAME!,
+    EVENT_STREAM_ADDRESS!
+  );
+
+  const balanceOfBatchsessioncodeDeployHash = await erc1155.balanceOfBatchsessioncode(
+    KEYS,
+    ERC1155_PACKAGE_HASH!,
+    "balance_of",
+    "24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1",
+    "2",
+    //["2","3"],
+    //["781d4ebe2ec8451f52deede21d54b495edb5d1325153c1453a8504cab77824fd","24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1"],
+    ERC1155_INSTALL_PAYMENT_AMOUNT!,
+    ERC1155_PROXY_WASM_PATH!
+  );
+
+  console.log(`... balanceOfBatchsessioncode Function deployHash: ${balanceOfBatchsessioncodeDeployHash}`);
+
+  await getDeploy(NODE_ADDRESS!, balanceOfBatchsessioncodeDeployHash);
+
+  console.log(`... balanceOfBatchsessioncode Function called successfully through sessionCode.`);
+
+};
+
+testSessionCode();

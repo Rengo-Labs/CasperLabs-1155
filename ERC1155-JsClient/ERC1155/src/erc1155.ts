@@ -30,13 +30,15 @@ class ERC1155Client {
   private contractHash: string= "erc1155";
   private contractPackageHash: string= "erc1155";
   private namedKeys: {
-    balances:string
+    balanceOf:string
     metadata: string;
     nonces: string;
     allowances: string;
     ownedTokens: string;
     owners: string;
     paused: string;
+    Operator_Approvals: string;
+    balances:string;
     
   };
 
@@ -52,13 +54,15 @@ class ERC1155Client {
   ) 
   {
     this.namedKeys= {
-      balances:"null",
+      balanceOf:"null",
       metadata: "null",
       nonces: "null",
       allowances: "null",
       ownedTokens: "null",
       owners: "null",
-      paused: "null"
+      paused: "null",
+      Operator_Approvals:"null",
+      balances:"null",
     }; 
   }
 
@@ -72,6 +76,46 @@ class ERC1155Client {
     const runtimeArgs = RuntimeArgs.fromMap({
       uri: CLValueBuilder.string(uri),
       contract_name: CLValueBuilder.string(contractName),
+    });
+
+    const deployHash = await installWasmFile({
+      chainName: this.chainName,
+      paymentAmount,
+      nodeAddress: this.nodeAddress,
+      keys,
+      pathToContract: wasmPath,
+      runtimeArgs,
+    });
+
+    if (deployHash !== null) {
+      return deployHash;
+    } else {
+      throw Error("Problem with installation");
+    }
+  }
+
+
+  public async balanceOfBatchsessioncode(
+    keys: Keys.AsymmetricKey,
+    packageHash: string,
+    entrypointName:string,
+    //accounts: string[],
+    accounts:string,
+    //ids:string[],
+    ids:string,
+    paymentAmount: string,
+    wasmPath: string
+  ) {
+    const _packageHash = new CLByteArray(
+			Uint8Array.from(Buffer.from(packageHash, "hex"))
+		);
+    const runtimeArgs = RuntimeArgs.fromMap({
+      destination_package_hash: utils.createRecipientAddress(_packageHash),
+      destination_entrypoint: CLValueBuilder.string(entrypointName),
+      // ids: CLValueBuilder.list(ids.map(id => CLValueBuilder.u256(id))),
+      // accounts: CLValueBuilder.list(accounts.map(accounts => CLValueBuilder.string(accounts)))
+      account:CLValueBuilder.string(accounts),
+      id: CLValueBuilder.string(ids),
     });
 
     const deployHash = await installWasmFile({
@@ -105,9 +149,11 @@ class ERC1155Client {
       ""
     );
     const LIST_OF_NAMED_KEYS = [
+      'balance_of',
       'balances',
       'nonces',
       'allowances',
+      'Operator_Approvals',
       `${this.contractName}_package_hash`,
       `${this.contractName}_package_hash_wrapped`,
       `${this.contractName}_contract_hash`,
@@ -123,60 +169,96 @@ class ERC1155Client {
     }, {});
   }
 
-  public async uri(
-    keys: Keys.AsymmetricKey,
-    paymentAmount: string
-  ) {
-    const runtimeArgs = RuntimeArgs.fromMap({
-    });
-    const deployHash = await contractCall({
-      chainName: this.chainName,
-      contractHash: this.contractHash,
-      entryPoint: "uri",
-      keys,
-      nodeAddress: this.nodeAddress,
-      paymentAmount,
-      runtimeArgs,
-    });
 
-    if (deployHash !== null) {
-      return deployHash;
-    } else {
-      throw Error("Invalid Deploy");
+  public async uri() {
+    const result = await contractSimpleGetter(
+      this.nodeAddress,
+      this.contractHash,
+      ["URI"]
+    );
+    return result.value();
+  }
+
+  public async balanceOf(tokenId: string,account:string) {
+    // try {
+      const keyOwner=new CLKey(new CLAccountHash(Uint8Array.from(Buffer.from(account, "hex"))));
+      const token = CLValueBuilder.u256(tokenId);
+      const finalBytes = concat([CLValueParsers.toBytes(keyOwner).unwrap(), CLValueParsers.toBytes(token).unwrap()]);
+      const blaked = blake.blake2b(finalBytes, undefined, 32);
+      const encodedBytes = Buffer.from(blaked).toString("hex");
+
+      const result = await utils.contractDictionaryGetter(
+        this.nodeAddress,
+        encodedBytes,
+        //this.namedKeys.balanceOf
+        "balances"
+      );
+      const maybeValue = result.value().unwrap();
+      return maybeValue.value().toString();
+
+    // } catch (error) {
+    //   return "0";
+    // }
+    
+  }
+
+  public async isApprovedForAll(account:string, operator:string) {
+    try {
+      const _operator = new CLByteArray(
+        Uint8Array.from(Buffer.from(operator, "hex"))
+      );
+
+      const keyOwner=new CLKey(new CLAccountHash(Uint8Array.from(Buffer.from(account, "hex"))));
+      const keyOperator = createRecipientAddress(_operator);
+      const finalBytes = concat([CLValueParsers.toBytes(keyOwner).unwrap(), CLValueParsers.toBytes(keyOperator).unwrap()]);
+      const blaked = blake.blake2b(finalBytes, undefined, 32);
+      const encodedBytes = Buffer.from(blaked).toString("hex");
+
+      const result = await utils.contractDictionaryGetter(
+        this.nodeAddress,
+        encodedBytes,
+        this.namedKeys.Operator_Approvals
+      );
+
+      const maybeValue = result.value().unwrap();
+      return maybeValue.value().toString();
+    } catch (error) {
+      return "0";
     }
+
   }
 
  
-  public async balanceOf(
-    keys: Keys.AsymmetricKey,
-    tokenId: string,
-    owner: RecipientType,
-    paymentAmount: string
-  ) {
-    const runtimeArgs = RuntimeArgs.fromMap({
-      token_id: CLValueBuilder.u256(tokenId),
-      owner: utils.createRecipientAddress(owner),
-    });
-    const deployHash = await contractCall({
-      chainName: this.chainName,
-      contractHash: this.contractHash,
-      entryPoint: "balance_of",
-      keys,
-      nodeAddress: this.nodeAddress,
-      paymentAmount,
-      runtimeArgs,
-    });
+  // public async balanceOf(
+  //   keys: Keys.AsymmetricKey,
+  //   tokenId: string,
+  //   owner: RecipientType,
+  //   paymentAmount: string
+  // ) {
+  //   const runtimeArgs = RuntimeArgs.fromMap({
+  //     token_id: CLValueBuilder.u256(tokenId),
+  //     owner: utils.createRecipientAddress(owner),
+  //   });
+  //   const deployHash = await contractCall({
+  //     chainName: this.chainName,
+  //     contractHash: this.contractHash,
+  //     entryPoint: "balance_of",
+  //     keys,
+  //     nodeAddress: this.nodeAddress,
+  //     paymentAmount,
+  //     runtimeArgs,
+  //   });
 
-    if (deployHash !== null) {
-      return deployHash;
-    } else {
-      throw Error("Invalid Deploy");
-    }
-  }
+  //   if (deployHash !== null) {
+  //     return deployHash;
+  //   } else {
+  //     throw Error("Invalid Deploy");
+  //   }
+  // }
 
   public async  balanceOfBatch(
     keys: Keys.AsymmetricKey,
-    accounts: string[],//issue
+    accounts: string[],
     ids: string[],
     paymentAmount: string,
   ) {
@@ -237,45 +319,50 @@ class ERC1155Client {
     }
   }
 
-  public async isApprovedForAll(
-    keys: Keys.AsymmetricKey,
-    account: RecipientType,
-    operator: string,
-    paymentAmount: string
-  ) {
-    const _operator = new CLByteArray(
-			Uint8Array.from(Buffer.from(operator, "hex"))
-		);
-    const runtimeArgs = RuntimeArgs.fromMap({
-      account: utils.createRecipientAddress(account), 
-      operator: utils.createRecipientAddress(_operator),
-    });
-    const deployHash = await contractCall({
-      chainName: this.chainName,
-      contractHash: this.contractHash,
-      entryPoint: "is_approved_for_all",
-      keys,
-      nodeAddress: this.nodeAddress,
-      paymentAmount,
-      runtimeArgs,
-    });
+  // public async isApprovedForAll(
+  //   keys: Keys.AsymmetricKey,
+  //   account: RecipientType,
+  //   operator: string,
+  //   paymentAmount: string
+  // ) {
+  //   const _operator = new CLByteArray(
+	// 		Uint8Array.from(Buffer.from(operator, "hex"))
+	// 	);
+  //   const runtimeArgs = RuntimeArgs.fromMap({
+  //     account: utils.createRecipientAddress(account), 
+  //     operator: utils.createRecipientAddress(_operator),
+  //   });
+  //   const deployHash = await contractCall({
+  //     chainName: this.chainName,
+  //     contractHash: this.contractHash,
+  //     entryPoint: "is_approved_for_all",
+  //     keys,
+  //     nodeAddress: this.nodeAddress,
+  //     paymentAmount,
+  //     runtimeArgs,
+  //   });
 
-    if (deployHash !== null) {
-      return deployHash;
-    } else {
-      throw Error("Invalid Deploy");
-    }
-  }
+  //   if (deployHash !== null) {
+  //     return deployHash;
+  //   } else {
+  //     throw Error("Invalid Deploy");
+  //   }
+  // }
 
   public async safeTransferFrom(
     keys: Keys.AsymmetricKey,
     from: RecipientType,
+    //from:string,
     to: string,
+    //to:RecipientType,
     id:string,
     amount:string,
     data:string,
     paymentAmount: string
   ) {
+    // const _from = new CLByteArray(
+		// 	Uint8Array.from(Buffer.from(from, "hex"))
+		// );
     const _to = new CLByteArray(
 			Uint8Array.from(Buffer.from(to, "hex"))
 		);
@@ -284,7 +371,7 @@ class ERC1155Client {
       to: utils.createRecipientAddress(_to),
       id: CLValueBuilder.u256(id),
       amount: CLValueBuilder.u256(amount),
-      //_data:data.ToBytes(data), //issue byte
+      data:CLValueBuilder.string(data)
     });
     const deployHash = await contractCall({
       chainName: this.chainName,
@@ -320,12 +407,105 @@ class ERC1155Client {
       to: utils.createRecipientAddress(_to),
       ids: CLValueBuilder.list(ids.map(id => CLValueBuilder.u256(id))),
       amounts: CLValueBuilder.list(amounts.map(amounts => CLValueBuilder.u256(amounts))),
-      _data:CLValueBuilder.u256(data), //issue byte
+      data:CLValueBuilder.string(data),
     });
     const deployHash = await contractCall({
       chainName: this.chainName,
       contractHash: this.contractHash,
       entryPoint: "safe_batch_transfer_from",
+      keys,
+      nodeAddress: this.nodeAddress,
+      paymentAmount,
+      runtimeArgs,
+    });
+
+    if (deployHash !== null) {
+      return deployHash;
+    } else {
+      throw Error("Invalid Deploy");
+    }
+  }
+
+  public async mint(
+    keys: Keys.AsymmetricKey,
+    to: RecipientType,
+    //to:string,
+    id:string,
+    amount:string,
+    data:string,
+    paymentAmount: string
+  ) {
+    // const _to = new CLByteArray(
+		// 	Uint8Array.from(Buffer.from(to, "hex"))
+		// );
+    const runtimeArgs = RuntimeArgs.fromMap({
+      to: utils.createRecipientAddress(to),
+      id: CLValueBuilder.u256(id),
+      amount: CLValueBuilder.u256(amount),
+      data:CLValueBuilder.string(data)
+    });
+    const deployHash = await contractCall({
+      chainName: this.chainName,
+      contractHash: this.contractHash,
+      entryPoint: "mint",
+      keys,
+      nodeAddress: this.nodeAddress,
+      paymentAmount,
+      runtimeArgs,
+    });
+
+    if (deployHash !== null) {
+      return deployHash;
+    } else {
+      throw Error("Invalid Deploy");
+    }
+  }
+
+  public async burn(
+    keys: Keys.AsymmetricKey,
+    from: RecipientType,
+    id:string,
+    amount:string,
+    paymentAmount: string
+  ) {
+    const runtimeArgs = RuntimeArgs.fromMap({
+      from: utils.createRecipientAddress(from),
+      id: CLValueBuilder.u256(id),
+      amount: CLValueBuilder.u256(amount),
+    });
+    const deployHash = await contractCall({
+      chainName: this.chainName,
+      contractHash: this.contractHash,
+      entryPoint: "burn",
+      keys,
+      nodeAddress: this.nodeAddress,
+      paymentAmount,
+      runtimeArgs,
+    });
+
+    if (deployHash !== null) {
+      return deployHash;
+    } else {
+      throw Error("Invalid Deploy");
+    }
+  }
+
+  public async burnBatch(
+    keys: Keys.AsymmetricKey,
+    from: RecipientType,
+    ids:string[],
+    amounts:string[],
+    paymentAmount: string
+  ) {
+    const runtimeArgs = RuntimeArgs.fromMap({
+      from: utils.createRecipientAddress(from), 
+      ids: CLValueBuilder.list(ids.map(ids => CLValueBuilder.u256(ids))),
+      amounts: CLValueBuilder.list(amounts.map(amounts => CLValueBuilder.u256(amounts))),
+    });
+    const deployHash = await contractCall({
+      chainName: this.chainName,
+      contractHash: this.contractHash,
+      entryPoint: "burn_batch",
       keys,
       nodeAddress: this.nodeAddress,
       paymentAmount,
