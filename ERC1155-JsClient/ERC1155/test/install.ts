@@ -79,11 +79,11 @@ const testSessionCode = async () => {
   const balanceOfBatchsessioncodeDeployHash = await erc1155.balanceOfBatchsessioncode(
     KEYS,
     ERC1155_PACKAGE_HASH!,
-    "balance_of",
-    "24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1",
-    "2",
-    //["2","3"],
-    //["781d4ebe2ec8451f52deede21d54b495edb5d1325153c1453a8504cab77824fd","24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1"],
+    "balance_of_batch",
+    // "24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1",
+    //"2",
+    ["2","3"],
+    ["24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1","781d4ebe2ec8451f52deede21d54b495edb5d1325153c1453a8504cab77824fd"],
     ERC1155_INSTALL_PAYMENT_AMOUNT!,
     ERC1155_PROXY_WASM_PATH!
   );

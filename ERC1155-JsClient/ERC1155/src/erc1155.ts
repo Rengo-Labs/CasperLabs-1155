@@ -99,10 +99,8 @@ class ERC1155Client {
     keys: Keys.AsymmetricKey,
     packageHash: string,
     entrypointName:string,
-    //accounts: string[],
-    accounts:string,
-    //ids:string[],
-    ids:string,
+    ids:string[],
+    accounts: string[],
     paymentAmount: string,
     wasmPath: string
   ) {
@@ -110,12 +108,10 @@ class ERC1155Client {
 			Uint8Array.from(Buffer.from(packageHash, "hex"))
 		);
     const runtimeArgs = RuntimeArgs.fromMap({
-      destination_package_hash: utils.createRecipientAddress(_packageHash),
-      destination_entrypoint: CLValueBuilder.string(entrypointName),
-      // ids: CLValueBuilder.list(ids.map(id => CLValueBuilder.u256(id))),
-      // accounts: CLValueBuilder.list(accounts.map(accounts => CLValueBuilder.string(accounts)))
-      account:CLValueBuilder.string(accounts),
-      id: CLValueBuilder.string(ids),
+      package_hash: utils.createRecipientAddress(_packageHash),
+      entrypoint: CLValueBuilder.string(entrypointName),
+      ids: CLValueBuilder.list(ids.map(id => CLValueBuilder.u256(id))),
+      accounts: CLValueBuilder.list(accounts.map(accounts => CLValueBuilder.string(accounts)))
     });
 
     const deployHash = await installWasmFile({
@@ -180,25 +176,24 @@ class ERC1155Client {
   }
 
   public async balanceOf(tokenId: string,account:string) {
-    // try {
+     try {
       const keyOwner=new CLKey(new CLAccountHash(Uint8Array.from(Buffer.from(account, "hex"))));
       const token = CLValueBuilder.u256(tokenId);
-      const finalBytes = concat([CLValueParsers.toBytes(keyOwner).unwrap(), CLValueParsers.toBytes(token).unwrap()]);
+      const finalBytes = concat([CLValueParsers.toBytes(token).unwrap(), CLValueParsers.toBytes(keyOwner).unwrap()]);
       const blaked = blake.blake2b(finalBytes, undefined, 32);
       const encodedBytes = Buffer.from(blaked).toString("hex");
 
       const result = await utils.contractDictionaryGetter(
         this.nodeAddress,
         encodedBytes,
-        //this.namedKeys.balanceOf
-        "balances"
+        this.namedKeys.balances
       );
       const maybeValue = result.value().unwrap();
       return maybeValue.value().toString();
 
-    // } catch (error) {
-    //   return "0";
-    // }
+    } catch (error) {
+      return "0";
+    }
     
   }
 

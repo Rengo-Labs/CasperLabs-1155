@@ -56,8 +56,8 @@ const test = async () => {
   // console.log(`... Contract name: ${uri}`);
 
   //balanceOf
-  const balanceOf = await erc1155.balanceOf(TOKEN_ID!,"24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1");
-  console.log(`... Contract balanceOf: ${balanceOf}`);
+  // const balanceOf = await erc1155.balanceOf(TOKEN_ID!,"24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1");
+  // console.log(`... Contract balanceOf: ${balanceOf}`);
 
 
   //isApproveForAll
