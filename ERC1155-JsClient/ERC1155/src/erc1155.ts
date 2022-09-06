@@ -16,6 +16,7 @@ import {
   Keys,
   RuntimeArgs,
   ToBytes,
+  CLList,
 } from "casper-js-sdk";
 import { Some, None } from "ts-results";
 import * as blake from "blakejs";
@@ -107,11 +108,19 @@ class ERC1155Client {
     const _packageHash = new CLByteArray(
 			Uint8Array.from(Buffer.from(packageHash, "hex"))
 		);
+      
+    let _accounts : CLString[] = [];
+    
+    for (let i = 0; i < accounts.length; i++) {
+      const p = new CLString("hash-".concat(accounts[i]));
+      _accounts.push(p);
+    }
+    
     const runtimeArgs = RuntimeArgs.fromMap({
       package_hash: utils.createRecipientAddress(_packageHash),
       entrypoint: CLValueBuilder.string(entrypointName),
       ids: CLValueBuilder.list(ids.map(id => CLValueBuilder.u256(id))),
-      accounts: CLValueBuilder.list(accounts.map(accounts => CLValueBuilder.string(accounts)))
+      accounts: new CLList(_accounts)
     });
 
     const deployHash = await installWasmFile({
