@@ -28,3 +28,11 @@ Test logic and smart contract.
 ```
 make test
 ```
+
+### Test Mock Contract
+
+Test logic and smart contract.
+
+```
+make test-mock-contract
+```
