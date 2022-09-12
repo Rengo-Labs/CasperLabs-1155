@@ -1,10 +1,11 @@
 import { config } from "dotenv";
 config();
 import { ERC1155Client, utils } from "../src";
-import { parseTokenMeta, sleep, getDeploy } from "./utils";
+import { getDeploy } from "./utils";
 
 import {
   Keys,
+  encodeBase16
 } from "casper-js-sdk";
 
 const {
@@ -16,6 +17,7 @@ const {
   ERC1155_INSTALL_PAYMENT_AMOUNT,
   ERC1155_CONTRACT_NAME,
   URI,
+  OPERATOR,
   ERC1155_PACKAGE_HASH,
   ERC1155_PROXY_WASM_PATH,
 } = process.env;
@@ -66,7 +68,7 @@ const test = async () => {
   console.log(`... Package Hash: ${packageHash}`);
 };
 
-test();
+//test();
 
 
 const testSessionCode = async () => {
@@ -75,23 +77,28 @@ const testSessionCode = async () => {
     CHAIN_NAME!,
     EVENT_STREAM_ADDRESS!
   );
+  
+  const userAccountHash=encodeBase16(KEYS.accountHash());
+  const ids=["2","3"];
+  const functionName="balance_of_batch";
 
   const balanceOfBatchsessioncodeDeployHash = await erc1155.balanceOfBatchsessioncode(
     KEYS,
     ERC1155_PACKAGE_HASH!,
-    "balance_of_batch",
-    ["2","3"],
-    ["24a56544c522eca7fba93fb7a6cef83e086706fd87b2f344f5c3dad3603d11f1","781d4ebe2ec8451f52deede21d54b495edb5d1325153c1453a8504cab77824fd"],
+    functionName,
+    ids,
+    [userAccountHash,OPERATOR!],
     ERC1155_INSTALL_PAYMENT_AMOUNT!,
     ERC1155_PROXY_WASM_PATH!
   );
   
   console.log(`... balanceOfBatchsessioncode Function deployHash: ${balanceOfBatchsessioncodeDeployHash}`);
 
-  await getDeploy(NODE_ADDRESS!, balanceOfBatchsessioncodeDeployHash);
+  let result = await getDeploy(NODE_ADDRESS!, balanceOfBatchsessioncodeDeployHash);
 
   console.log(`... balanceOfBatchsessioncode Function called successfully through sessionCode.`);
+  console.log("balanceOfBatchsessioncode Function Result: ",result);
 
 };
 
-// testSessionCode();
+testSessionCode();

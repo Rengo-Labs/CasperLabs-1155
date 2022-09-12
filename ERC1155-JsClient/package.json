@@ -6,10 +6,13 @@
     "test:erc1155install": "ts-node ERC1155/test/install.ts",
     "test:erc1155installed": "ts-node ERC1155/test/installed.ts"
   },
+  "engines": {
+    "node": "16.14.0",
+    "npm": "8.10.0"
+  },
   "dependencies": {
-    "axios": "^0.24.0",
     "blakejs": "^1.1.1",
-    "casper-js-sdk": "^2.7.5",
+    "casper-js-sdk": "^2.9.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^10.0.0",

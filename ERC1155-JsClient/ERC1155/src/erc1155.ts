@@ -232,67 +232,6 @@ class ERC1155Client {
 
   }
 
- 
-  // public async balanceOf(
-  //   keys: Keys.AsymmetricKey,
-  //   tokenId: string,
-  //   owner: RecipientType,
-  //   paymentAmount: string
-  // ) {
-  //   const runtimeArgs = RuntimeArgs.fromMap({
-  //     token_id: CLValueBuilder.u256(tokenId),
-  //     owner: utils.createRecipientAddress(owner),
-  //   });
-  //   const deployHash = await contractCall({
-  //     chainName: this.chainName,
-  //     contractHash: this.contractHash,
-  //     entryPoint: "balance_of",
-  //     keys,
-  //     nodeAddress: this.nodeAddress,
-  //     paymentAmount,
-  //     runtimeArgs,
-  //   });
-
-  //   if (deployHash !== null) {
-  //     return deployHash;
-  //   } else {
-  //     throw Error("Invalid Deploy");
-  //   }
-  // }
-
-  public async  balanceOfBatch(
-    keys: Keys.AsymmetricKey,
-    accounts: string[],
-    ids: string[],
-    paymentAmount: string,
-  ) {
-    // const _accounts = new CLByteArray(
-		// 	Uint8Array.from(Buffer.from(accounts[''], "hex"))
-		// );
-    const runtimeArgs = RuntimeArgs.fromMap({
-      //accounts: CLValueBuilder.list(_accounts.map(ac => utils.createRecipientAddress(ac))),
-      ids: CLValueBuilder.list(ids.map(id => CLValueBuilder.u256(id))),
-      accounts: CLValueBuilder.list(accounts.map(accounts => CLValueBuilder.string(accounts)))
-    });
-  
-    const deployHash = await contractCall({
-      chainName: this.chainName,
-      contractHash: this.contractHash,
-      entryPoint: "balance_of_batch",
-      keys,
-      nodeAddress: this.nodeAddress,
-      paymentAmount,
-      runtimeArgs,
-    });
-  
-    if (deployHash !== null) {
-      
-      return deployHash;
-    } else {
-      throw Error("Invalid Deploy");
-    }
-  }
-
   public async setApprovalForAll(
     keys: Keys.AsymmetricKey,
     operator: string,
@@ -323,50 +262,16 @@ class ERC1155Client {
     }
   }
 
-  // public async isApprovedForAll(
-  //   keys: Keys.AsymmetricKey,
-  //   account: RecipientType,
-  //   operator: string,
-  //   paymentAmount: string
-  // ) {
-  //   const _operator = new CLByteArray(
-	// 		Uint8Array.from(Buffer.from(operator, "hex"))
-	// 	);
-  //   const runtimeArgs = RuntimeArgs.fromMap({
-  //     account: utils.createRecipientAddress(account), 
-  //     operator: utils.createRecipientAddress(_operator),
-  //   });
-  //   const deployHash = await contractCall({
-  //     chainName: this.chainName,
-  //     contractHash: this.contractHash,
-  //     entryPoint: "is_approved_for_all",
-  //     keys,
-  //     nodeAddress: this.nodeAddress,
-  //     paymentAmount,
-  //     runtimeArgs,
-  //   });
-
-  //   if (deployHash !== null) {
-  //     return deployHash;
-  //   } else {
-  //     throw Error("Invalid Deploy");
-  //   }
-  // }
-
   public async safeTransferFrom(
     keys: Keys.AsymmetricKey,
     from: RecipientType,
-    //from:string,
     to: string,
-    //to:RecipientType,
     id:string,
     amount:string,
     data:string,
     paymentAmount: string
   ) {
-    // const _from = new CLByteArray(
-		// 	Uint8Array.from(Buffer.from(from, "hex"))
-		// );
+
     const _to = new CLByteArray(
 			Uint8Array.from(Buffer.from(to, "hex"))
 		);
@@ -433,15 +338,11 @@ class ERC1155Client {
   public async mint(
     keys: Keys.AsymmetricKey,
     to: RecipientType,
-    //to:string,
     id:string,
     amount:string,
     data:string,
     paymentAmount: string
   ) {
-    // const _to = new CLByteArray(
-		// 	Uint8Array.from(Buffer.from(to, "hex"))
-		// );
     const runtimeArgs = RuntimeArgs.fromMap({
       to: utils.createRecipientAddress(to),
       id: CLValueBuilder.u256(id),
