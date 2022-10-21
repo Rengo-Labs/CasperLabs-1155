@@ -123,3 +123,13 @@ export const contractHashToByteArray = (contractHash: string) =>
 export const sleep = (num: number) => {
   return new Promise((resolve) => setTimeout(resolve, num));
 };
+
+export const getAccountInfoForBackend = async (
+  nodeAddress: string,
+  accountHash: string
+) => {
+  const stateRootHash = await getStateRootHash(nodeAddress);
+  const client = new CasperServiceByJsonRPC(nodeAddress);
+  const blockState = await client.getBlockState(stateRootHash, "account-hash-"+accountHash, []);
+  return blockState.Account;
+};

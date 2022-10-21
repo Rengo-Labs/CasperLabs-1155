@@ -112,7 +112,7 @@ class ERC1155Client {
     let _accounts : CLString[] = [];
     
     for (let i = 0; i < accounts.length; i++) {
-      const p = new CLString("hash-".concat(accounts[i]));
+      const p = new CLString("account-hash-".concat(accounts[i]));
       _accounts.push(p);
     }
     
