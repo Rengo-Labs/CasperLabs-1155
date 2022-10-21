@@ -272,12 +272,10 @@ class ERC1155Client {
     paymentAmount: string
   ) {
 
-    const _to = new CLByteArray(
-			Uint8Array.from(Buffer.from(to, "hex"))
-		);
+    const _to=new CLKey(new CLAccountHash(Uint8Array.from(Buffer.from(to, "hex"))));
     const runtimeArgs = RuntimeArgs.fromMap({
       from: utils.createRecipientAddress(from), 
-      to: utils.createRecipientAddress(_to),
+      to: _to,
       id: CLValueBuilder.u256(id),
       amount: CLValueBuilder.u256(amount),
       data:CLValueBuilder.string(data)
@@ -308,12 +306,10 @@ class ERC1155Client {
     data:string,
     paymentAmount: string
   ) {
-    const _to = new CLByteArray(
-			Uint8Array.from(Buffer.from(to, "hex"))
-		);
+    const _to=new CLKey(new CLAccountHash(Uint8Array.from(Buffer.from(to, "hex"))));
     const runtimeArgs = RuntimeArgs.fromMap({
       from: utils.createRecipientAddress(from), 
-      to: utils.createRecipientAddress(_to),
+      to: _to,
       ids: CLValueBuilder.list(ids.map(id => CLValueBuilder.u256(id))),
       amounts: CLValueBuilder.list(amounts.map(amounts => CLValueBuilder.u256(amounts))),
       data:CLValueBuilder.string(data),
